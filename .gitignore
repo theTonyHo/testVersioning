@@ -7,4 +7,4 @@
 *.pyc
 armacode.ini
 *.log
-VERSION
+**VERSION
