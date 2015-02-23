@@ -9,52 +9,16 @@
 # .git/hooks/
 # It is mandatory to keep track of the Versions for every commit.
 
-stagedChanges=`git diff --name-only --cached`
+LOCAL=$(git rev-parse @)
+REMOTE=$(git rev-parse @{u})
+BASE=$(git merge-base @ @{u})
 
-# if [ "$stagedChanges" == "" ] ; then
-#     echo "Nothing to commit"
-#     exit 1
-# fi
-
-# Path of the version file
-versionFile="${PWD}/VERSION"
-
-# Read the first line to determine current version
-oldVersion=$(head -n 1 $versionFile)
-
-# Obtain current git information
-strDescribe=`git describe --tags --long`
-if [ "$strDescribe" == "" ] ; then
-    echo "At least one tag is required for version update."
-    exit 0
+if [ $LOCAL = $REMOTE ]; then
+    echo "Up-to-date"
+elif [ $LOCAL = $BASE ]; then
+    echo "Need to pull"
+elif [ $REMOTE = $BASE ]; then
+    echo "Need to push"
+else
+    echo "Diverged"
 fi
-
-# Establish variables
-version=$(echo $strDescribe | cut -f1 -d-)
-buildNumber=$(echo $strDescribe | cut -f2 -d-)
-commitdate=`date "+%m%d"`
-fullDate=`date "+%A, %d/%m/%Y %T"`
-
-# # Increment by one as it commits
-# buildNumber=$((buildNumber))
-
-# Establish new version format. i.e v1.01.14.1028
-newVersion=$(echo $version Build $buildNumber.$commitdate)
-
-# Debug
-# echo $oldVersion
-# echo $newVersion
-
-# Only add to commit if there is changes 
-if [ "$newVersion" != "$oldVersion" ]; then
-    echo 
-    echo "Automatic update remote version."
-    echo -------------------------------------
-    echo 
-    git add $versionFile
-    git commit -m "Version updated to $newVersion"
-    echo "Version updated to $newVersion"
-    echo ""
-fi
-exit 0
-
