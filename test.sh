@@ -9,10 +9,11 @@
 # .git/hooks/
 # It is mandatory to keep track of the Versions for every commit.
 
+status=$(git status)
+echo $status
 $(git fetch origin master)
 
 LOCAL=$(git rev-parse @)
-
 REMOTE=$(git rev-parse @{u})
 BASE=$(git merge-base @ @{u})
 
