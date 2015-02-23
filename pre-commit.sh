@@ -11,14 +11,14 @@
 
 stagedChanges=`git diff --name-only --cached`
 
-# if [ "$stagedChanges" == "" ] ; then
-#     echo "Nothing to commit"
-#     exit 1
-# fi
+if [ "$stagedChanges" == "" ] ; then
+    echo "Nothing to commit"
+    exit 1
+fi
 
 # Path of the version file
 versionFile="${PWD}/VERSION"
-echo $versionFile
+
 # Read the first line to determine current version
 oldVersion=$(head -n 1 $versionFile)
 
@@ -46,11 +46,8 @@ if [ "$newVersion" != "$oldVersion" ]; then
     echo -e $fullDate
     echo -e $newVersion'\r' > "$versionFile"
     echo -e $fullDate >> "$versionFile"
+    git add $versionFile
     echo "Version updated to $newVersion"
     echo ""
-    exit 0
-else
-    echo "Nothing to commit"
-    exit 1
 fi
-
+exit 0
